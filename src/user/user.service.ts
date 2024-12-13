@@ -14,7 +14,7 @@ export class UserService {
   }
 
   async createUser(createUserDto: CreateUserDto): Promise<User> {
-    const { email, password } = createUserDto;
+    const { email, password, role } = createUserDto;
     if (!email || email.trim() === '') {
       throw new Error('Email cannot be empty');
     }
@@ -29,9 +29,11 @@ export class UserService {
     const user = this.userRepository.create({
       email,
       password: hashedPassword,
+      role,
     });
     return this.userRepository.save(user);
   }
+  
   async updateRefreshToken(
     userId: number,
     refreshToken: string,
