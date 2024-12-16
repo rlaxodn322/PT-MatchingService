@@ -5,6 +5,7 @@ import { DataSource, Repository } from 'typeorm';
 import { Application } from './entity/application.entity';
 import { User } from 'src/user/entity/user.entity';
 import { CreateScheduleDto } from './dto/createScheduledto';
+import { FilterScheduleDto } from './dto/filterScheduleDto';
 
 @Injectable()
 export class ScheduleService {
@@ -121,5 +122,26 @@ export class ScheduleService {
       status: 'pending',
     });
     return await this.applicationRepository.save(application);
+  }
+
+  async filterSchedules(filterScheduleDto: FilterScheduleDto) {
+    const { startDate, endDate, teacherId } = filterScheduleDto;
+    const query = this.scheduleRepository
+      .createQueryBuilder('schedule')
+      .leftJoinAndSelect('schedule.teacher', 'teacher')
+      .leftJoinAndSelect('schedule.application', 'application');
+    if (startDate) {
+      query.andWhere('schedule.date>= :startDate', { startDate });
+    }
+    if (endDate) {
+      query.andWhere('schedule.date<= :endDate', { endDate });
+    }
+    if (teacherId) {
+      query.andWhere('teacher.id = :teacherId', { teacherId });
+    }
+    query.orderBy('schedule.date', 'ASC').addOrderBy('schedule.time', 'ASC');
+
+    const schedule = await query.getMany();
+    return schedule;
   }
 }
