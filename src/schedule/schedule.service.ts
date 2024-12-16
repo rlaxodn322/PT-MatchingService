@@ -64,29 +64,29 @@ export class ScheduleService {
       where: { id: scheduleId },
       relations: ['teacher', 'application', 'application.user'],
     });
-  
+
     if (!schedule) {
       throw new NotFoundException('Schedule not found');
     }
-  
+
     const application = schedule.application.find(
       (app) => app.user.id === userId,
     );
-  
+
     if (!application) {
       throw new Error('You have not applied for this schedule');
     }
-  
+
     // 취소 처리
     schedule.isBooked = false;
     await this.scheduleRepository.save(schedule);
-  
+
     // 신청 정보 삭제
     await this.applicationRepository.remove(application);
-  
+
     return { message: 'Schedule canceled successfully' };
   }
-  
+
   async getAvailableSchedules(teacherId: number) {
     return await this.scheduleRepository.find({
       where: { teacher: { id: teacherId }, isBooked: false },
@@ -94,6 +94,14 @@ export class ScheduleService {
   }
 
   async applyToSchedule(userId: number, scheduleId: number) {
+    const existingApplication = await this.applicationRepository.findOne({
+      where: { user: { id: userId }, schedule: { id: scheduleId } },
+    });
+
+    if (existingApplication) {
+      throw new Error('You have already applied for this schedule');
+    }
+
     const schedule = await this.scheduleRepository.findOne({
       where: { id: scheduleId, isBooked: false },
     });
