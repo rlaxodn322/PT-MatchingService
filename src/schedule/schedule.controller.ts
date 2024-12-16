@@ -3,6 +3,8 @@ import { ScheduleService } from './schedule.service';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 import { CreateScheduleDto } from './dto/createScheduledto';
 import { ApplyScheduelDto } from './dto/applyScheduledto';
+import { UpdateApplicationStatusDto } from './dto/updateScheduledto';
+import { CancleScheduleDto } from './dto/cancelScheduledto';
 
 @Controller('schedule')
 export class ScheduleController {
@@ -16,6 +18,39 @@ export class ScheduleController {
   ) {
     const teacherId = req.user.id;
     return this.scheduleService.createSchedule(teacherId, createScheduleDto);
+  }
+  @UseGuards(JwtAuthGuard)
+  @Get('my-app')
+  async getMyApplication(@Req() req: any) {
+    const userId = req.user.id;
+    return this.scheduleService.getMyApp(userId);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Post('update-status')
+  async updateApplicationStatus(
+    @Req() req: any,
+    @Body() updateApplicationStatusDto: UpdateApplicationStatusDto,
+  ) {
+    const teacherId = req.user.id;
+    return this.scheduleService.updateApp(
+      teacherId,
+      updateApplicationStatusDto.applicationId,
+      updateApplicationStatusDto.status,
+    );
+  }
+  @UseGuards(JwtAuthGuard)
+
+  @Post('cancel')
+  async cancelSchedule(
+    @Req() req: any,
+    @Body() cancelScheduleDto: CancleScheduleDto,
+  ) {
+    const userId = req.user.id;
+    return this.scheduleService.cancelSchedule(
+      userId,
+      cancelScheduleDto.scheduleId,
+    );
   }
 
   @Get('available/:teacherId')
