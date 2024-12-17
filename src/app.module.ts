@@ -9,6 +9,7 @@ import { join } from 'path';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { PostModule } from './post/post.module';
 import { ScheduleModule } from './schedule/schedule.module';
+import { ReviewModule } from './review/review.module';
 
 
 @Module({
@@ -39,6 +40,7 @@ import { ScheduleModule } from './schedule/schedule.module';
     UserModule,
     PostModule,
     ScheduleModule,
+    ReviewModule,
 
     // PostModule,
     // CommentModule,

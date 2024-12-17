@@ -1,5 +1,6 @@
 import { application } from 'express';
 import { Post } from 'src/post/entity/post.entity';
+import { Review } from 'src/review/entity/review.entity';
 import { Application } from 'src/schedule/entity/application.entity';
 import { Schedule } from 'src/schedule/entity/schedule.entity';
 import { App } from 'supertest/types';
@@ -29,4 +30,10 @@ export class User {
 
   @OneToMany(() => Application, (application) => application.user)
   applications: Application[];
+
+  @OneToMany(() => Review, (review) => review.member)
+  reviews: Review[];
+
+  @OneToMany(() => Review, (review) => review.teacher)
+  receivedReviews: Review[];
 }
