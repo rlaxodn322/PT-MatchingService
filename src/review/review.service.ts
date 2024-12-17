@@ -27,4 +27,20 @@ export class ReviewService {
     });
     return await this.reviewRepository.save(review);
   }
+
+  async getTeacherReviews(teacherId: number) {
+    const reviews = await this.reviewRepository.find({
+      where: { teacher: { id: teacherId } },
+      order: { createdAt: 'DESC' },
+    });
+
+    const averageRating =
+      reviews.reduce((sum, review) => sum + review.rating, 0) /
+        reviews.length || 0;
+
+    return {
+      reviews,
+      averageRating: parseFloat(averageRating.toFixed(2)),
+    };
+  }
 }
